@@ -1,8 +1,10 @@
 spring:
   application:
     name: rsocket-cloudevents
+  profiles:
+    active: ${RSOCKET_CLOUDEVENTS_PROFILE:server}
 
 ---
 logging:
   level:
-    io.rsocket.FrameLogger: DEBUG
+    io.rsocket.FrameLogger: INFO

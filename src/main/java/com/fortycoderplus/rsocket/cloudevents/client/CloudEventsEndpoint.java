@@ -40,8 +40,9 @@ import reactor.core.publisher.Flux;
 public class CloudEventsEndpoint {
 
     @MessageMapping("cloudevents")
-    public Flux<CloudEvent> ping(@Header CloudEvent metaCloudEvent, @Payload CloudEvent cloudEvent) {
-        logger.info("Received event:{} with metadata:{}", cloudEvent, metaCloudEvent);
+    public Flux<CloudEvent> cloudevents(
+            @Header(name = "cloudevents") CloudEvent metaCloudEvent, @Payload CloudEvent cloudEvent) {
+        logger.info("Received cloud event:{} with metadata:{}", cloudEvent, metaCloudEvent);
         return Flux.just(CloudEventBuilder.from(cloudEvent)
                 .withId(UUID.randomUUID().toString())
                 .withTime(OffsetDateTime.now())

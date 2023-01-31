@@ -45,7 +45,7 @@ public class ClientRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        logger.info("Start painite client runner");
+        logger.info("Start rsocket client runner");
         rsocketRequester
                 .route("cloudevents")
                 .metadata(metadataSpec -> metadataSpec.metadata(
@@ -53,7 +53,7 @@ public class ClientRunner implements CommandLineRunner {
                         valueOf(APPLICATION_CLOUDEVENTS_JSON.getString())))
                 .data(cloudEvent("com.fortycoderplus.rsocket.cloudevents.push"))
                 .retrieveMono(CloudEvent.class)
-                .subscribe(cloudEvent -> logger.info("Received cloud event:{}", cloudEvent));
+                .subscribe(cloudEvent -> logger.info("Received reply cloud event:{}", cloudEvent));
     }
 
     private CloudEvent cloudEvent(String type) {

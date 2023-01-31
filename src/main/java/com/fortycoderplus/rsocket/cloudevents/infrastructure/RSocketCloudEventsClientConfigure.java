@@ -23,6 +23,8 @@ package com.fortycoderplus.rsocket.cloudevents.infrastructure;
 import static io.rsocket.metadata.WellKnownMimeType.APPLICATION_CLOUDEVENTS_JSON;
 import static org.springframework.util.MimeType.valueOf;
 
+import com.fortycoderplus.rsocket.cloudevents.client.CloudEventsEndpoint;
+import io.rsocket.SocketAcceptor;
 import java.time.Duration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import reactor.util.retry.Retry;
 
 @Profile("client")
@@ -40,9 +43,12 @@ public class RSocketCloudEventsClientConfigure {
     @Bean
     public RSocketRequester cloudEventRsocketRequester(
             RSocketCloudEventsClientProperties properties, RSocketStrategies rsocketStrategies) {
+        SocketAcceptor responder = RSocketMessageHandler.responder(rsocketStrategies, new CloudEventsEndpoint());
         RSocketRequester.Builder builder = RSocketRequester.builder();
         return builder.rsocketStrategies(rsocketStrategies)
-                .rsocketConnector(connector -> connector.reconnect(Retry.fixedDelay(2, Duration.ofSeconds(2))))
+                .rsocketConnector(connector -> connector
+                        .reconnect(Retry.fixedDelay(2, Duration.ofSeconds(2)))
+                        .acceptor(responder))
                 .dataMimeType(valueOf(APPLICATION_CLOUDEVENTS_JSON.getString()))
                 .tcp(properties.server().host(), properties.server().port());
     }

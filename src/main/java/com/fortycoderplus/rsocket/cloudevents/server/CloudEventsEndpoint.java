@@ -48,22 +48,27 @@ public class CloudEventsEndpoint {
 
     @MessageMapping("cloudevents")
     public Mono<CloudEvent> cloudevents(
-            RSocketRequester rsocketRequester, @Header CloudEvent metaCloudEvent, @Payload CloudEvent cloudEvent) {
-        logger.info("Received event:{} with metadata:{}", cloudEvent, metaCloudEvent);
+            RSocketRequester rsocketRequester,
+            @Header(name = "cloudevents") CloudEvent metaCloudEvent,
+            @Payload CloudEvent cloudEvent) {
+        logger.info("Received cloud event:{} with metadata:{}", cloudEvent, metaCloudEvent);
 
-        Flux.just(cloudEvent).delayElements(Duration.ofMillis(100)).map(event -> rsocketRequester
-                .route("cloudevents")
-                .metadata(metadataSpec -> metadataSpec.metadata(
-                        CloudEventBuilder.from(metaCloudEvent)
-                                .withId(UUID.randomUUID().toString())
-                                .withTime(OffsetDateTime.now())
-                                .withType("com.fortycoderplus.rsocket.cloudevents.reply")
-                                .withSource(URI.create("com.fortycoderplus.rsocket.cloudevents.server"))
-                                .build(),
-                        valueOf(APPLICATION_CLOUDEVENTS_JSON.getString())))
-                .data(event)
-                .retrieveFlux(CloudEvent.class)
-                .doOnNext(ack -> logger.info("Received replay event:{}", ack)));
+        Flux.just(cloudEvent)
+                .delayElements(Duration.ofMillis(100))
+                .map(event -> rsocketRequester
+                        .route("cloudevents")
+                        .metadata(metadataSpec -> metadataSpec.metadata(
+                                CloudEventBuilder.from(metaCloudEvent)
+                                        .withId(UUID.randomUUID().toString())
+                                        .withTime(OffsetDateTime.now())
+                                        .withType("com.fortycoderplus.rsocket.cloudevents.reply")
+                                        .withSource(URI.create("com.fortycoderplus.rsocket.cloudevents.server"))
+                                        .build(),
+                                valueOf(APPLICATION_CLOUDEVENTS_JSON.getString())))
+                        .data(event)
+                        .retrieveFlux(CloudEvent.class)
+                        .subscribe(reply -> logger.info("Received replay cloud event:{}", reply)))
+                .subscribe();
 
         return Mono.just(CloudEventBuilder.from(cloudEvent)
                 .withId(UUID.randomUUID().toString())
