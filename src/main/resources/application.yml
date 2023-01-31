@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: rsocket-cloudevents
+
+---
+logging:
+  level:
+    io.rsocket.FrameLogger: DEBUG

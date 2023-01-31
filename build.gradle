@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'idea'
+
+    id 'org.springframework.boot' version '3.0.2'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'org.graalvm.buildtools.native' version '0.9.18'
+
+    id "com.palantir.baseline-idea" version "4.185.0"
+    id "com.diffplug.spotless" version "6.12.1"
+    id "org.owasp.dependencycheck" version "7.4.4"
+}
+
+ext {
+    eventsVersion = '2.4.1'
+}
+
+apply plugin: 'com.palantir.baseline-format'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-rsocket'
+
+    // CloudEvents
+    implementation "io.cloudevents:cloudevents-api:$eventsVersion"
+    implementation "io.cloudevents:cloudevents-core:$eventsVersion"
+    implementation "io.cloudevents:cloudevents-json-jackson:$eventsVersion"
+    implementation "io.cloudevents:cloudevents-kafka:$eventsVersion"
+    implementation "io.cloudevents:cloudevents-spring:$eventsVersion"
+    implementation "io.cloudevents:cloudevents-http-basic:$eventsVersion"
+
+    // Reactor Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'io.projectreactor.kafka:reactor-kafka:1.3.14'
+
+    compileOnly 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+}
+
+java {
+    withSourcesJar()
+}
+
+plugins.withType(JavaPlugin) {
+    project.sourceCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+spotless {
+    java {
+        target 'src/main/java/**/*.java', 'src/test/java/**/*.java'
+
+        palantirJavaFormat()
+        formatAnnotations()
+    }
+}
