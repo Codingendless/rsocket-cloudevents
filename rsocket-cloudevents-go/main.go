@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"github.com/rsocket/rsocket-go/extension"
-	"github.com/rsocket/rsocket-go/rx/flux"
 	"log"
 
 	cloudevents "github.com/cloudevents/sdk-go/v2"
+
 	"github.com/rsocket/rsocket-go"
+	"github.com/rsocket/rsocket-go/extension"
 	"github.com/rsocket/rsocket-go/payload"
+	"github.com/rsocket/rsocket-go/rx/flux"
 )
 
 func main() {
