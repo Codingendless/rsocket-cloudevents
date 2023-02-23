@@ -2,3 +2,7 @@ spring:
   rsocket:
     server:
       port: 9527
+
+logging:
+  level:
+    io.rsocket.FrameLogger: DEBUG
