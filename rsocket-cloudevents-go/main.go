@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/rsocket/rsocket-go/extension"
+	"github.com/rsocket/rsocket-go/rx/flux"
 	"log"
 
 	cloudevents "github.com/cloudevents/sdk-go/v2"
@@ -13,15 +14,24 @@ import (
 
 func main() {
 	var c = make(chan bool)
-
 	// Connect to server
 	cli, err := rsocket.Connect().
 		SetupPayload(payload.Empty()).
 		MetadataMimeType(extension.MessageCompositeMetadata.String()).
 		DataMimeType(cloudevents.ApplicationCloudEventsJSON).
 		Acceptor(func(ctx context.Context, socket rsocket.RSocket) rsocket.RSocket {
-			//responder
-			return nil
+			return rsocket.NewAbstractSocket(
+				rsocket.RequestStream(func(input payload.Payload) flux.Flux {
+					s := input.DataUTF8()
+					m, _ := input.MetadataUTF8()
+					log.Println("data:", s, "metadata:", m)
+					bytes, _ := json.Marshal(event())
+					return flux.Just(payload.New(bytes, nil)).
+						DoOnComplete(func() {
+							c <- true
+						})
+				}),
+			)
 		}).
 		Transport(rsocket.TCPClient().SetHostAndPort("127.0.0.1", 9527).Build()).
 		Start(context.Background())
