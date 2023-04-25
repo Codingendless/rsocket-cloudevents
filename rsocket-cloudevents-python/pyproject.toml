@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rsocket-cloudevents-python"
+version = "1.0.0"
+description = "RSocket using CloudEvnets in Python"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Codingendless", email = "codingendless@40coderplus.com" },
+]
+
+dependencies = [
+    "rsocket",
+    "cloudevents",
+    "reactivestreams",
+]
+
+[project.urls]
+source = "https://github.com/Codingendless/rsocket-cloudevents"
+
+[tool.setuptools]
+packages = ["rsocket"]
