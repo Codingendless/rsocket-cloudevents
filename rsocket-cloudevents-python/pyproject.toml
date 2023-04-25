@@ -23,4 +23,4 @@ dependencies = [
 source = "https://github.com/Codingendless/rsocket-cloudevents"
 
 [tool.setuptools]
-packages = ["rsocket"]
+packages = ["sample"]
