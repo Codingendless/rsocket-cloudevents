@@ -3,7 +3,7 @@ module rsocket-cloudevents-go
 go 1.19
 
 require (
-	github.com/cloudevents/sdk-go/v2 v2.13.0
+	github.com/cloudevents/sdk-go/v2 v2.14.0
 	github.com/rsocket/rsocket-go v0.8.12
 )
 

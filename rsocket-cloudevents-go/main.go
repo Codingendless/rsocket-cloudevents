@@ -6,7 +6,6 @@ import (
 	"log"
 
 	cloudevents "github.com/cloudevents/sdk-go/v2"
-
 	"github.com/rsocket/rsocket-go"
 	"github.com/rsocket/rsocket-go/extension"
 	"github.com/rsocket/rsocket-go/payload"
@@ -39,7 +38,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer cli.Close()
+	defer func(cli rsocket.Client) {
+		err := cli.Close()
+		if err != nil {
+
+		}
+	}(cli)
 
 	// Send request
 	bytes, _ := json.Marshal(event())
